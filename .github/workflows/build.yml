@@ -22,10 +22,14 @@ jobs:
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
         ./gradlew :module:assembleRelease
         
-        # Mengubah nama file zip hasil build agar sesuai dengan package name
+        # Buat folder output dan cari file zip secara otomatis dari direktori project
+        mkdir -p out/magisk_module_release/
+        find . -type f -name "*.zip" -exec cp {} out/magisk_module_release/ \;
+        
+        # Pindah ke folder output dan ubah nama file zip
         cd out/magisk_module_release/
         for f in *.zip; do
-          mv "$f" "Zygisk-Il2CppDumper-${{ github.event.inputs.package_name }}.zip"
+          [ -f "$f" ] && mv "$f" "Zygisk-Il2CppDumper-${{ github.event.inputs.package_name }}.zip"
         done
     - uses: actions/upload-artifact@v4
       with:
