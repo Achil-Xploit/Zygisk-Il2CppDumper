@@ -14,15 +14,19 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: temurin
-        java-version: 21
+        java-version: 17
         cache: gradle
     - run: |
         chmod +x ./gradlew
+        
+        # Perbarui versi Gradle agar kompatibel dengan Java 17
+        ./gradlew wrapper --gradle-version 8.5
+        
         sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
         ./gradlew :module:assembleRelease
         
-        # Buat folder output dan cari file zip secara otomatis dari direktori project
+        # Buat folder output dan cari file zip secara otomatis
         mkdir -p out/magisk_module_release/
         find . -type f -name "*.zip" -exec cp {} out/magisk_module_release/ \;
         
